@@ -52,20 +52,29 @@ SomeBottle's Onedrive Folder Index transplanted from Heymind.
 
 3. 在index.php[**设置**](#Config)相关参数  
 
-4. 设置伪静态(重定向规则):（可选）  
+4. 设置伪静态(重写规则):（可选）  
   
-  ```
-  if (!-f $request_filename){
-    set $rule_0 1$rule_0;
-  }
-  if (!-d $request_filename){
-    set $rule_0 2$rule_0;
-  }
-  if ($rule_0 = "21"){
-    rewrite ^/(.*)$ /?/$1 last;
-  }
-  ```
-  如果是**非根目录**，要在重定向规则上作[相应调整](#rerewrite)。  
+	```
+	if (!-f $request_filename){
+	set $rule_0 1$rule_0;
+	}
+	if (!-d $request_filename){
+	set $rule_0 2$rule_0;
+	}
+	if ($rule_0 = "21"){
+	rewrite ^/(.*)$ /?/$1 last;
+	}
+	```
+	如果是**非根目录**，要在重写规则上作[相应调整](#rerewrite)。  
+
+> [!CAUTION]
+> 由于 Nginx 漏洞 [CVE-2026-42945](https://github.com/DepthFirstDisclosures/Nginx-Rift)，建议采用下方 `try_files` 方式实现重写。
+
+```
+location / {
+	try_files $uri $uri/ /?$request_uri;
+}
+```
   
 ## Thumbnail缩略图  
 对于图片文件，可以直接获取不同尺寸的缩略图。 比如：https://xxx/pics/loli.png?thumbnail=medium  
